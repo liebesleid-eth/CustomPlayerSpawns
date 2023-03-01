@@ -1,5 +1,6 @@
 Spawns = map(); //Stores spawns
-SpawnsSaveFile = "Spawns.config";
+SpawnsSaveFile = "Spawns.config"; //name for spawns file
+PermissionPrefix = "Spawn"; //Permission will be PermissionPrefix.CommandName
 MinReputation = 15; // players with this group won't get forced to the spawn
 wipeConfigMessage = "[CustomSpawns] Spawns have been wiped!";
 
@@ -43,13 +44,26 @@ event onPlayerDeath(victim, killer, cause)
   victim.setData("status", 0);
 }
 
+command Wild()
+{
+  allowCaller = "player";
+  permission = "{0}.Wild".format(PermissionPrefix);
+	execute()
+	{
+    rand = random();
+    roll = rand.int(0, Spawns.count);
+    spawnvar = Spawns.get(roll);
+    player.teleport(spawnvar);
+  }
+}
+
 command SpawnSet()
 {
 	allowCaller = "player";
-  permission = "SpawnSet";
+  permission = "{0}.Set".format(PermissionPrefix);
 	execute()
 	{
-    player.message("spawn set at: {0}".format(player.position.toString()));
+    player.message("[CustomSpawns] Spawn set at: {0}".format(player.position.toString()), "white");
     PlayerPos = player.position;
 	Spawns.set(Spawns.count, PlayerPos);
     saveConfig(Spawns);
@@ -59,18 +73,23 @@ command SpawnSet()
 
 command SpawnList()
 {
+  allowCaller = "player";
+  permission = "{0}.List".format(PermissionPrefix);
   execute()
   {
     if(Spawns.count == 0) return player.message("[CustomSpawns] There are no spawns set yet!, use /SpawnSet to get started", "red");
+    if(Spawns.count == 1) return player.message("[CustomSpawns] There are {1} spawns (ID 0), use /SpawnView <ID> to view it in your map".format(Spawns.count-1, Spawns.count), "white");
     player.message("[CustomSpawns] There are {1} spawns (ID 0 to {0}), use /SpawnView <ID> to view it in your map".format(Spawns.count-1, Spawns.count), "white");
   }
 }
 
 command SpawnView(arg)
 {
+  allowCaller = "player";
+  permission = "{0}.View".format(PermissionPrefix);
   execute()
   {
-    if(arguments.count < 1) return player.message("Missing argument. Please choose and ID");
+    if(arguments.count < 1) return player.message("Missing argument. Please choose an ID");
     if(Spawns.count == 0) return player.message("There are no spawns set yet!!! get started with /spawnset", "red");
     if(!Spawns.containsKey(arg.toNumber())) return player.message("This spawn doesn't Exist {0}".format(arg));
     player.marker.set(Spawns.get(arg.toNumber()), "CustomSpawn {0}".format(arg));
@@ -78,15 +97,16 @@ command SpawnView(arg)
   }
 }
 
-command WipeSpawns()
+command SpawnWipe()
 {
   allowCaller = "player";
-  permission = "WipeSpawns";
+  permission = "{0}.Wipe".format(PermissionPrefix);
   execute()
   {
     wipeConfig(Spawns);
     print(wipeConfigMessage);
     player.message(wipeConfigMessage, "red");
+    Spawns.clear();
     wipeConfigMessage = "[CustomSpawns] Spawns have been wiped!";
   }
 }
@@ -104,11 +124,6 @@ function saveConfig(configMap) {
 function wipeConfig(configMap)
 {
   text = "";
-  if(Spawns.count == 0) return file.writeAll(SpawnsSaveFile, text);
-  for(i = 0; i <= Spawns.count; i++)
-  {
-    Spawns.remove(i);
-  }
   file.writeAll(SpawnsSaveFile, text);
 }
 
