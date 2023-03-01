@@ -1,11 +1,8 @@
-// Script Configuration
-Spawns = map(); // Stores spawns, tho it looks empty 
-SpawnsSaveFile = "Spawns.config"; // Name for the Spawn file. It'll keep a copy of the map() stored.
-BypassGroup = "F"; // players with this group won't get forced to the spawn
-wipeConfigMessage = "[CustomSpawns] Spawns have been wiped!"; // The message it displays in-game when wiping the spawns
+Spawns = map(); //Stores spawns
+SpawnsSaveFile = "Spawns.config";
+MinReputation = 15; // players with this group won't get forced to the spawn
+wipeConfigMessage = "[CustomSpawns] Spawns have been wiped!";
 
-/* Script code is below, you are free to modify it as you please. Touching it might break the script,
-but it's as easy as pasting it back in and running /script reload to fix it! */
 event onLoad()
 {
 	loadConfig(Spawns);
@@ -16,13 +13,13 @@ event onPlayerJoined(player)
 {
   rand = random();
   roll = rand.int(0, Spawns.count);
-  spawnvar = Spawns.get(roll);
-  if(!player.hasGroup(BypassGroup))
+  spawnvar = Spawns.get(0);
+  if (player.reputation >= 15 and player.reputation <= -15) return print("true");
+  if (player.reputation <= 15 and player.reputation >= -15)
   {
     player.teleport(spawnvar);
-    server.execute("p add {0} {1}".format(player.id, BypassGroup));
     player.setData("status", 1);
-
+    print("[CustomSpawns] {0} seems to be new here, sent him to safezone.".format(player.name));
   }
 }
 
@@ -31,7 +28,7 @@ event onPlayerRespawned(player)
   if (player.getData("status") == 0)
   {
     player.setData("status", 1);
-    if(player.bedPosition.distance(player.position) > 2)
+    if(!player.hasBed or player.bedPosition.distance(player.position) > 2)
     {
       rand = random();
       roll = rand.int(0, Spawns.count);
@@ -46,17 +43,17 @@ event onPlayerDeath(victim, killer, cause)
   victim.setData("status", 0);
 }
 
-command SetSpawn()
+command SpawnSet()
 {
 	allowCaller = "player";
-  permission = "setspawn";
+  permission = "SpawnSet";
 	execute()
 	{
     player.message("spawn set at: {0}".format(player.position.toString()));
     PlayerPos = player.position;
 	Spawns.set(Spawns.count, PlayerPos);
     saveConfig(Spawns);
-    print("[CustomSpawns] {0} Spawns saved to unturned/uScript/Data/{1}!".format(Spawns.count, SpawnsSaveFile));
+    print("[CustomSpawns] {0} Spawns saved to unturned/uScript/Data/{1}!".format(Spawns.count, SpawnsSaveFile), "white");
 	}
 }
 
@@ -64,7 +61,8 @@ command SpawnList()
 {
   execute()
   {
-    player.message("[CustomSpawns] There are {0} spawns (ID 0 to {0}), use /SpawnView <ID> to view it in your map".format(Spawns.count-1));
+    if(Spawns.count == 0) return player.message("[CustomSpawns] There are no spawns set yet!, use /SpawnSet to get started", "red");
+    player.message("[CustomSpawns] There are {1} spawns (ID 0 to {0}), use /SpawnView <ID> to view it in your map".format(Spawns.count-1, Spawns.count), "white");
   }
 }
 
@@ -72,8 +70,11 @@ command SpawnView(arg)
 {
   execute()
   {
-    player.message("[CustomSpawns] Spawn {0} found [{1}], Check your map marker".format(arg.toString()));
+    if(arguments.count < 1) return player.message("Missing argument. Please choose and ID");
+    if(Spawns.count == 0) return player.message("There are no spawns set yet!!! get started with /spawnset", "red");
+    if(!Spawns.containsKey(arg.toNumber())) return player.message("This spawn doesn't Exist {0}".format(arg));
     player.marker.set(Spawns.get(arg.toNumber()), "CustomSpawn {0}".format(arg));
+    player.message("[CustomSpawns] Spawn {0} found [{1}], Check your map marker".format(arg.toString(), player.marker.position.toString()), "white");
   }
 }
 
@@ -85,7 +86,7 @@ command WipeSpawns()
   {
     wipeConfig(Spawns);
     print(wipeConfigMessage);
-    player.message(wipeConfigMessage);
+    player.message(wipeConfigMessage, "red");
     wipeConfigMessage = "[CustomSpawns] Spawns have been wiped!";
   }
 }
@@ -100,8 +101,14 @@ function saveConfig(configMap) {
 }
 
 // Takes care of completely clearing the Spawns file
-function wipeConfig(configMap) {
+function wipeConfig(configMap)
+{
   text = "";
+  if(Spawns.count == 0) return file.writeAll(SpawnsSaveFile, text);
+  for(i = 0; i <= Spawns.count; i++)
+  {
+    Spawns.remove(i);
+  }
   file.writeAll(SpawnsSaveFile, text);
 }
 
