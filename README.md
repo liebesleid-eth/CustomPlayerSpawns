@@ -8,7 +8,7 @@ This script requires **uScript** installed in your server in order to be execute
 - New players will be teleported to the first spawn you set (Spawn 0), works well for safezones.
 - Players will be randomly teleported to any of the spawns you set.
 - Works with bedrolls, players will still be able to use /home.
-- /WildSpawn command, teleports the player to one of the spawns randomly.
+- (future) /WildSpawn command, teleports the player to one of the spawns randomly.
 - Spawns are kept upon server restarts and script reloads.
 
 ## Usage:
@@ -18,7 +18,7 @@ This script requires **uScript** installed in your server in order to be execute
 | SpawnList | Tells you how many spawns there are, as well as the ID range (0 - n). |
 | SpawnView <ID> | Tells you the spawn's coordinates, and marks it on your map. |
 | WipeSpawns | Clears the SpawnList completely. |
-| WildWarp | Randomly teleports the player to one of the spawns. |
+| (future) WildWarp | Randomly teleports the player to one of the spawns. |
 
 ## Installation steps
 <details><summary>Step 1 - Joining uScript discord</summary>
