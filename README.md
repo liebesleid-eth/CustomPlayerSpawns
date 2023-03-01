@@ -3,7 +3,9 @@ Replace the default unturned player spawns with this script using commands!
 
 This script requires **uScript** installed in your server in order to be executed. Join [uScript Discord](https://discord.gg/DukF46FcPQ) to download **uScript module**.
 
-Usage:
+Feel free to contact me if you need help with installing uscript: Liebesleid.eth#8866 , or ask directly in uScript discord.
+
+## Usage:
 | Command | Description |
 | --- | --- |
 | SetSpawn | Creates a new player spawn point in the point where you are standing and assigns it an ID starting from 0. |
