@@ -15,7 +15,7 @@ event onPlayerJoined(player)
   rand = random();
   roll = rand.int(0, Spawns.count);
   spawnvar = Spawns.get(0);
-  if (player.reputation >= 15 and player.reputation <= -15) return print("true");
+  if (player.reputation >= 15 and player.reputation <= -15) return;
   if (player.reputation <= 15 and player.reputation >= -15)
   {
     player.teleport(spawnvar);

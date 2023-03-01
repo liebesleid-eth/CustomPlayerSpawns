@@ -8,17 +8,17 @@ This script requires **uScript** installed in your server in order to be execute
 - New players will be teleported to the first spawn you set (Spawn 0), works well for safezones.
 - Players will be randomly teleported to any of the spawns you set.
 - Works with bedrolls, players will still be able to use /home.
-- (future) /WildSpawn command, teleports the player to one of the spawns randomly.
+- /Wild command, teleports the player to one of the spawns randomly.
 - Spawns are kept upon server restarts and script reloads.
 
 ## Usage:
-| Command | Description |
-| --- | --- |
-| SetSpawn | Creates a new player spawn point in the point where you are standing and assigns it an ID starting from 0. |
-| SpawnList | Tells you how many spawns there are, as well as the ID range (0 - n). |
-| SpawnView <ID> | Tells you the spawn's coordinates, and marks it on your map. |
-| WipeSpawns | Clears the SpawnList completely. |
-| (future) WildWarp | Randomly teleports the player to one of the spawns. |
+| Command | Description | Permission |
+| --- | --- | --- |
+| SetSpawn | Creates a new player spawn point in the point where you are standing and assigns it an ID starting from 0. | Spawn.Set |
+| SpawnList | Tells you how many spawns there are, as well as the ID range (0 - n). | Spawn.List |
+| SpawnView <ID> | Tells you the spawn's coordinates, and marks it on your map. | Spawn.View |
+| WipeSpawns | Clears the SpawnList completely. | Spawn.Wipe | 
+| Wild | Randomly teleports the player to one of the spawns. | Spawn.Wild |
 
 ## Installation steps
 <details><summary>Step 1 - Joining uScript discord</summary>
@@ -57,6 +57,8 @@ After this, it should look something like this:
 <p>
   
 Restart your server, and once its done you can find uScript script's directory under ```Servers/unturned/uScript/Scripts```. In this folder is where you have to drop CustomPlayerSpawns.uscript file, or any other uScript scripts that you wish to use.
+
+Aside from **CustomPlayerSpawns.uscript**, you'll also need to drop **Spawns.config** file inside ```Servers/unturned/uScript/Data``` as this will contain and keep your spawnpoints persistent.
 
 Upon doing this, you can now run `/script reload` in console to load them to your server.
 
