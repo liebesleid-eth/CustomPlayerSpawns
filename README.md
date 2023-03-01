@@ -14,10 +14,10 @@ This script requires **uScript** installed in your server in order to be execute
 ## Usage:
 | Command | Description | Permission |
 | --- | --- | --- |
-| SetSpawn | Creates a new player spawn point in the point where you are standing and assigns it an ID starting from 0. | Spawn.Set |
+| SpawnSet | Creates a new player spawn point in the point where you are standing and assigns it an ID starting from 0. | Spawn.Set |
 | SpawnList | Tells you how many spawns there are, as well as the ID range (0 - n). | Spawn.List |
 | SpawnView <ID> | Tells you the spawn's coordinates, and marks it on your map. | Spawn.View |
-| WipeSpawns | Clears the SpawnList completely. | Spawn.Wipe | 
+| SpawnWipe | Clears the SpawnList completely. | Spawn.Wipe | 
 | Wild | Randomly teleports the player to one of the spawns. | Spawn.Wild |
 
 ## Installation steps
