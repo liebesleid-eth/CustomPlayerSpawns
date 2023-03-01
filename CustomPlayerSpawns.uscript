@@ -1,0 +1,125 @@
+// Script Configuration
+Spawns = map(); // Stores spawns, tho it looks empty 
+SpawnsSaveFile = "Spawns.config"; // Name for the Spawn file. It'll keep a copy of the map() stored.
+BypassGroup = "F"; // players with this group won't get forced to the spawn
+wipeConfigMessage = "[CustomSpawns] Spawns have been wiped!"; // The message it displays in-game when wiping the spawns
+
+/* Script code is below, you are free to modify it as you please. Touching it might break the script,
+but it's as easy as pasting it back in and running /script reload to fix it! */
+event onLoad()
+{
+	loadConfig(Spawns);
+  print("[CustomSpawns] {0} Spawns loaded from unturned/uScript/Data/{1}!".format(Spawns.count, SpawnsSaveFile));
+}
+
+event onPlayerJoined(player)
+{
+  rand = random();
+  roll = rand.int(0, Spawns.count);
+  spawnvar = Spawns.get(roll);
+  if(!player.hasGroup(BypassGroup))
+  {
+    player.teleport(spawnvar);
+    server.execute("p add {0} {1}".format(player.id, BypassGroup));
+    player.setData("status", 1);
+
+  }
+}
+
+event onPlayerRespawned(player)
+{
+  if (player.getData("status") == 0)
+  {
+    player.setData("status", 1);
+    if(player.bedPosition.distance(player.position) > 2)
+    {
+      rand = random();
+      roll = rand.int(0, Spawns.count);
+      spawnvar = Spawns.get(roll);
+      player.teleport(spawnvar);
+    }
+  }
+}
+
+event onPlayerDeath(victim, killer, cause)
+{
+  victim.setData("status", 0);
+}
+
+command SetSpawn()
+{
+	allowCaller = "player";
+  permission = "setspawn";
+	execute()
+	{
+    player.message("spawn set at: {0}".format(player.position.toString()));
+    PlayerPos = player.position;
+	Spawns.set(Spawns.count, PlayerPos);
+    saveConfig(Spawns);
+    print("[CustomSpawns] {0} Spawns saved to unturned/uScript/Data/{1}!".format(Spawns.count, SpawnsSaveFile));
+	}
+}
+
+command SpawnList()
+{
+  execute()
+  {
+    player.message("[CustomSpawns] There are {0} spawns (ID 0 to {0}), use /SpawnView <ID> to view it in your map".format(Spawns.count-1));
+  }
+}
+
+command SpawnView(arg)
+{
+  execute()
+  {
+    player.message("[CustomSpawns] Spawn {0} found [{1}], Check your map marker".format(arg.toString()));
+    player.marker.set(Spawns.get(arg.toNumber()), "CustomSpawn {0}".format(arg));
+  }
+}
+
+command WipeSpawns()
+{
+  allowCaller = "player";
+  permission = "WipeSpawns";
+  execute()
+  {
+    wipeConfig(Spawns);
+    print(wipeConfigMessage);
+    player.message(wipeConfigMessage);
+    wipeConfigMessage = "[CustomSpawns] Spawns have been wiped!";
+  }
+}
+
+// Saves the spawns from the map to the Spawns file
+function saveConfig(configMap) {
+  text = "";
+  foreach(keyValuePair in configMap) {
+    text += "{0}={1}\n".format(keyValuePair.key, keyValuePair.value.toString().replace("x", "").replace("y", "").replace("z", "").trim());
+  }
+  file.writeAll(SpawnsSaveFile, text);
+}
+
+// Takes care of completely clearing the Spawns file
+function wipeConfig(configMap) {
+  text = "";
+  file.writeAll(SpawnsSaveFile, text);
+}
+
+// Loads the Spawns file to the map
+function loadConfig(configMap)
+{
+  configText = file.read(SpawnsSaveFile);
+  configLines = configText.split("\n");
+  foreach(line in configLines)
+  {
+    if(line == "") continue;
+    p = line.split("=");
+    partnumber = p[0].toNumber();
+    vectorpart = p[1].split(",");
+    vx = vectorpart[0].toNumber();
+    vy = vectorpart[1].toNumber();
+    vz = vectorpart[2].toNumber();
+    v3 = vector3(vx, vy, vz);
+    Spawns.set(partnumber, v3);
+  }
+}
